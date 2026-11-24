@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\PesanController;
 use App\Http\Controllers\PimpinanController;
 use App\Models\Berita;
+use App\Models\Guru;
 use App\Models\Pimpinan;
 use Illuminate\Support\Facades\Route;
 
@@ -12,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $beritas   = Berita::latest()->take(3)->get();
     $pimpinans = Pimpinan::orderBy('urutan', 'asc')->get();
-    return view('home', compact('beritas', 'pimpinans'));
+    $gurus     = Guru::orderBy('urutan', 'asc')->orderBy('nama', 'asc')->get();
+    return view('home', compact('beritas', 'pimpinans', 'gurus'));
 })->name('home');
 
 Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('pesan.store');
@@ -40,4 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/pimpinan', [PimpinanController::class, 'store'])->name('admin.pimpinan.store');
     Route::put('/admin/pimpinan/{pimpinan}', [PimpinanController::class, 'update'])->name('admin.pimpinan.update');
     Route::delete('/admin/pimpinan/{pimpinan}', [PimpinanController::class, 'destroy'])->name('admin.pimpinan.destroy');
+
+    // Kelola Tenaga Pendidik (Guru)
+    Route::get('/admin/guru', [GuruController::class, 'index'])->name('admin.guru');
+    Route::post('/admin/guru', [GuruController::class, 'store'])->name('admin.guru.store');
+    Route::put('/admin/guru/{guru}', [GuruController::class, 'update'])->name('admin.guru.update');
+    Route::delete('/admin/guru/{guru}', [GuruController::class, 'destroy'])->name('admin.guru.destroy');
 });

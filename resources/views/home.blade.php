@@ -106,7 +106,7 @@
 
 <section id="profil">
   <div class="container">
-    <!-- ================= STRUKTUR PIMPINAN (DI ATAS VISI MISI & JUDUL SEJAJAR KE SAMPING) ================= -->
+    <!-- ================= 1. STRUKTUR PIMPINAN (KEPALA SEKOLAH & WAKASEK) ================= -->
     <div style="margin-bottom: 64px;">
       <div class="section-head reveal" style="margin-bottom: 32px; max-width: 100%;">
         <span class="eyebrow-dark">Tentang Kami · Struktur Pimpinan</span>
@@ -141,7 +141,42 @@
       @endif
     </div>
 
-    <!-- ================= VISI & MISI SEKOLAH ================= -->
+    <!-- ================= 2. DAFTAR TENAGA PENDIDIK (DI BAWAH KEPALA SEKOLAH) ================= -->
+    <div style="margin-bottom: 64px;">
+      <div class="section-head reveal" style="margin-bottom: 32px; max-width: 100%;">
+        <span class="eyebrow-dark">Tentang Kami · Tenaga Pendidik</span>
+        <h2>Daftar Guru &amp; Tenaga Pendidik</h2>
+        <p style="max-width: 650px;">Pendidik profesional yang membimbing siswa secara akademik maupun praktik kejuruan di SMKN 1 Binong.</p>
+      </div>
+
+      @if(isset($gurus) && $gurus->isNotEmpty())
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+          @foreach($gurus as $guru)
+            <div class="reveal" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 22px 18px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+              <img 
+                src="{{ $guru->foto ? asset('storage/' . $guru->foto) : asset('assets/logo.jpg.png') }}" 
+                alt="{{ $guru->nama }}" 
+                style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin: 0 auto 14px; border: 2px solid #e5e7eb;">
+              <div style="display: inline-block; font-size: 0.72rem; font-weight: 600; color: #1d4ed8; background: #eff6ff; padding: 3px 10px; border-radius: 6px; margin-bottom: 8px;">
+                {{ $guru->mapel }}
+              </div>
+              <h4 style="font-size: 1rem; font-weight: 700; color: #18181b; margin-bottom: 4px;">
+                {{ $guru->nama }}
+              </h4>
+              @if($guru->nip)
+                <p style="font-size: 0.78rem; color: #64748b; font-family: 'JetBrains Mono', monospace;">
+                  NIP. {{ $guru->nip }}
+                </p>
+              @endif
+            </div>
+          @endforeach
+        </div>
+      @else
+        <p style="color: #6b7280; font-size: 0.92rem;">Data tenaga pendidik belum ditambahkan.</p>
+      @endif
+    </div>
+
+    <!-- ================= 3. VISI & MISI SEKOLAH ================= -->
     <div class="section-head reveal" style="max-width: 100%;">
       <span class="eyebrow-dark">Arah &amp; Tujuan</span>
       <h2>Visi &amp; Misi Sekolah</h2>

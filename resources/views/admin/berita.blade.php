@@ -41,6 +41,7 @@
       <div class="nav-links">
         <a href="{{ route('admin.berita') }}" class="active">Kelola Berita</a>
         <a href="{{ route('admin.pimpinan') }}">Struktur Pimpinan</a>
+        <a href="{{ route('admin.guru') }}">Tenaga Pendidik</a>
         <a href="{{ route('admin.pesan') }}">Pesan Masuk</a>
         <a href="{{ url('/') }}" target="_blank">Lihat Website ↗</a>
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
