@@ -104,16 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
     revealObserver.observe(el);
   });
 
-  // ---- Contact form (demo) ----
-  const contactForm = document.getElementById("contactForm");
+  // ---- Auto-hide notifikasi sukses kirim pesan ----
   const formMsg = document.getElementById("formMsg");
-  if (contactForm && formMsg) {
-    contactForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      formMsg.classList.add("show");
-      contactForm.reset();
-      setTimeout(() => formMsg.classList.remove("show"), 4000);
-    });
+  if (formMsg && formMsg.classList.contains("show")) {
+    setTimeout(() => formMsg.classList.remove("show"), 5000);
   }
 
   // ---- FAQ Accordion ----
@@ -127,54 +121,93 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---- ENGINE KUIS REKOMENDASI JURUSAN ----
-  const quizData = [
+  // ---- ENGINE KUIS REKOMENDASI JURUSAN (DINAMIS) ----
+  const fallbackJurusanList = [
     {
-      question: "Kategori aktivitas apa yang paling bikin kamu bersemangat?",
-      options: [
-        { text: "Bikin aplikasi, mendesain web, atau membuat game komputer.", score: "pplg" },
-        { text: "Mengatur laporan keuangan, menghitung angka, dan pembukuan.", score: "akl" },
-        { text: "Membongkar mesin motor atau memodifikasi komponen otomotif.", score: "tbsm" },
-        { text: "Mengelola persuratan, mengetik cepat, dan mengatur jadwal kegiatan.", score: "mplb" }
-      ]
+      id: "pplg",
+      kode: "PPLG",
+      nama: "Pengembangan Perangkat Lunak & Gim",
+      deskripsi: "Kamu memiliki logika pemecahan masalah yang kuat serta ketertarikan tinggi pada dunia coding dan pembuatan sistem digital."
     },
     {
-      question: "Bagaimana cara kamu menyelesaikan suatu masalah teknis?",
-      options: [
-        { text: "Mencari logika atau algoritma yang salah dalam susunan kode.", score: "pplg" },
-        { text: "Menganalisis sistem kelistrikan & merakit sirkuit kontrol otomatis.", score: "tei" },
-        { text: "Meneliti kondisi tanah, nutrisi tanaman, serta sistem pengairan.", score: "atph" },
-        { text: "Menyusun strategi alur kerja kantor secara rapi dan sistematis.", score: "mplb" }
-      ]
+      id: "akl",
+      kode: "AKL",
+      nama: "Akuntansi & Keuangan Lembaga",
+      deskripsi: "Kamu sangat detail, teliti, dan menyukai manajemen data numerik serta analisis keuangan yang presisi."
     },
     {
-      question: "Jika diberi proyek bebas, kamu lebih memilih untuk membuat...",
-      options: [
-        { text: "Sistem otomasi pabrik pintar atau robotik mandiri.", score: "tei" },
-        { text: "Kebun hidroponik modern berbasis agribisnis berkelanjutan.", score: "atph" },
-        { text: "Bengkel servis motor komersial berskala besar.", score: "tbsm" },
-        { text: "Aplikasi e-commerce atau game petualangan buatan sendiri.", score: "pplg" }
-      ]
+      id: "tbsm",
+      kode: "TBSM",
+      nama: "Teknik Bisnis Sepeda Motor",
+      deskripsi: "Kamu adalah tipe orang praktikal yang gemar bekerja langsung dengan mesin mekanik dan dunia otomotif."
     },
     {
-      question: "Lingkungan kerja seperti apa yang paling kamu impikan nanti?",
-      options: [
-        { text: "Di dalam kantor startup teknologi yang santai namun dinamis.", score: "pplg" },
-        { text: "Di kantor perbankan nasional atau instansi keuangan terkemuka.", score: "akl" },
-        { text: "Di bengkel manufaktur resmi otomotif bersertifikat.", score: "tbsm" },
-        { text: "Di area lahan perkebunan modern terpadu bernilai tinggi.", score: "atph" }
-      ]
+      id: "mplb",
+      kode: "MPLB",
+      nama: "Manajemen Perkantoran & Layanan Bisnis",
+      deskripsi: "Kamu berbakat dalam manajemen operasional, komunikasi bisnis, serta penataan arsip kerja profesional."
     }
   ];
 
-  const targetJurusan = {
-    pplg: { title: "PPLG (Pengembangan Perangkat Lunak & Gim)", desc: "Kamu memiliki logika pemecahan masalah yang kuat serta ketertarikan tinggi pada dunia coding dan pembuatan sistem digital." },
-    akl: { title: "AKL (Akuntansi & Keuangan Lembaga)", desc: "Kamu sangat detail, teliti, dan menyukai manajemen data numerik serta analisis keuangan yang presisi." },
-    tbsm: { title: "TBSM (Teknik Bisnis Sepeda Motor)", desc: "Kamu adalah tipe orang praktikal yang gemar bekerja langsung dengan mesin mekanik dan dunia otomotif." },
-    mplb: { title: "MPLB (Manajemen Perkantoran & Layanan Bisnis)", desc: "Kamu berbakat dalam manajemen operasional, komunikasi bisnis, serta penataan arsip kerja profesional." },
-    atph: { title: "ATPH (Agribisnis Tanaman Pangan & Hortikultura)", desc: "Kamu peduli pada ketahanan pangan modern, botani, serta prospek wirausaha hijau masa depan." },
-    tei: { title: "TEI (Teknik Elektronika Industri)", desc: "Kamu menyukai teknologi kelistrikan canggih, otomasi pabrik, mikrokontroler, dan perakitan robot industri." }
-  };
+  const jurusanSource =
+    Array.isArray(window.STARBIN_JURUSANS) && window.STARBIN_JURUSANS.length > 0
+      ? window.STARBIN_JURUSANS
+      : fallbackJurusanList;
+
+  const targetJurusan = {};
+  jurusanSource.forEach((j) => {
+    const key = String(j.id);
+    const fullTitle =
+      j.kode && !String(j.nama).toUpperCase().includes(String(j.kode).toUpperCase())
+        ? `${j.kode} (${j.nama})`
+        : j.nama;
+
+    let fullDesc = j.deskripsi || "Kompetensi keahlian ini sesuai dengan minat dan potensi yang kamu pilih.";
+    if (j.prospek && String(j.prospek).trim() !== "") {
+      fullDesc += ` Prospek karir: ${String(j.prospek).trim()}.`;
+    }
+
+    targetJurusan[key] = {
+      title: fullTitle,
+      desc: fullDesc
+    };
+  });
+
+  const defaultJurusanKey = Object.keys(targetJurusan)[0] || "pplg";
+
+  const dbQuizSoals =
+    Array.isArray(window.STARBIN_KUIS_SOALS) && window.STARBIN_KUIS_SOALS.length > 0
+      ? window.STARBIN_KUIS_SOALS.filter((s) => Array.isArray(s.options) && s.options.length > 0)
+      : [];
+
+  const quizData =
+    dbQuizSoals.length > 0
+      ? dbQuizSoals.map((s) => ({
+          question: s.pertanyaan,
+          options: s.options.map((o) => ({
+            text: o.text,
+            score: String(o.jurusan_id),
+            weight: Number(o.bobot) || 1
+          }))
+        }))
+      : [
+          {
+            question: "Bidang aktivitas apa yang paling membuatmu bersemangat?",
+            options: jurusanSource.slice(0, 4).map((j) => ({
+              text: `Mempelajari dan mempraktikkan keahlian di bidang ${j.nama}.`,
+              score: String(j.id),
+              weight: 1
+            }))
+          },
+          {
+            question: "Lingkungan belajar atau kerja seperti apa yang paling kamu sukai?",
+            options: jurusanSource.slice(0, 4).map((j) => ({
+              text: `Berkarya dan berkarier sebagai spesialis di jalur ${j.kode || j.nama}.`,
+              score: String(j.id),
+              weight: 1
+            }))
+          }
+        ];
 
   let currentQuizIndex = 0;
   let quizScores = {};
@@ -195,13 +228,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (startQuizBtn) {
     startQuizBtn.addEventListener("click", () => {
+      currentQuizIndex = 0;
+      quizScores = {};
+      if (quizProgressFill) quizProgressFill.style.width = "0%";
       quizStartView.classList.remove("active");
+      quizResultView.classList.remove("active");
       quizQuestionView.classList.add("active");
       showQuizQuestion();
     });
   }
 
   function showQuizQuestion() {
+    if (!quizData.length) return;
     const currentQuestion = quizData[currentQuizIndex];
     quizStepIndicator.innerText = `Soal ${currentQuizIndex + 1} dari ${quizData.length}`;
     quizProgressFill.style.width = `${((currentQuizIndex + 1) / quizData.length) * 100}%`;
@@ -213,13 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.type = "button";
       btn.className = "quiz-opt-btn";
       btn.innerText = opt.text;
-      btn.addEventListener("click", () => handleQuizAnswer(opt.score));
+      btn.addEventListener("click", () => handleQuizAnswer(opt.score, opt.weight || 1));
       quizOptionsContainer.appendChild(btn);
     });
   }
 
-  function handleQuizAnswer(scoreKey) {
-    quizScores[scoreKey] = (quizScores[scoreKey] || 0) + 1;
+  function handleQuizAnswer(scoreKey, weight = 1) {
+    quizScores[scoreKey] = (quizScores[scoreKey] || 0) + weight;
     currentQuizIndex++;
 
     if (currentQuizIndex < quizData.length) {
@@ -233,20 +271,20 @@ document.addEventListener("DOMContentLoaded", () => {
     quizQuestionView.classList.remove("active");
     quizResultView.classList.add("active");
 
-    let highestScore = 0;
-    let recommendedJurusan = "pplg";
+    let highestScore = -1;
+    let recommendedJurusan = defaultJurusanKey;
 
     for (const key in quizScores) {
-      if (quizScores[key] > highestScore) {
+      if (quizScores[key] > highestScore && targetJurusan[key]) {
         highestScore = quizScores[key];
         recommendedJurusan = key;
       }
     }
 
-    const result = targetJurusan[recommendedJurusan];
-    latestRecommendedTitle = result.title;
-    resultTitle.innerText = result.title;
-    resultDesc.innerText = result.desc;
+    const result = targetJurusan[recommendedJurusan] || targetJurusan[defaultJurusanKey];
+    latestRecommendedTitle = result ? result.title : "Kompetensi Keahlian Pilihan";
+    resultTitle.innerText = latestRecommendedTitle;
+    resultDesc.innerText = result ? result.desc : "";
   }
 
   if (quizCtaLink) {

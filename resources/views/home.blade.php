@@ -37,7 +37,6 @@
       <a href="#home" class="nav-link">Home</a>
       <a href="#profil" class="nav-link">Profil</a>
       <a href="#jurusan" class="nav-link">Jurusan</a>
-      <a href="#kuis-jurusan" class="nav-link">Cari Jurusan</a>
       <a href="#berita" class="nav-link">Berita</a>
       <a href="#faq" class="nav-link">FAQ</a>
       <a href="#kontak" class="nav-link">Kontak</a>
@@ -66,7 +65,7 @@
         <div class="label">Siswa Aktif</div>
       </div>
       <div class="stat">
-        <div class="num count-up" data-target="6">0</div>
+        <div class="num count-up" data-target="{{ isset($jurusans) && $jurusans->isNotEmpty() ? $jurusans->count() : 6 }}">0</div>
         <div class="label">Kompetensi Keahlian</div>
       </div>
       <div class="stat">
@@ -86,19 +85,39 @@
     </div>
     <div class="logo-slider">
       <div class="logo-slide-track">
-        <div class="logo-item">BANK BJB</div>
-        <div class="logo-item">FAVEHOTEL</div>
-        <div class="logo-item">PT. INOVINDO DIGITAL MEDIA</div>
-        <div class="logo-item">BANK BRI</div>
-        <div class="logo-item">PT. GOTHRU MEDIA INDONESIA</div>
-        <div class="logo-item">PT. PLN</div>
-        <!-- Duplikasi logo agar putaran tidak putus -->
-        <div class="logo-item" aria-hidden="true">BANK BJB</div>
-        <div class="logo-item" aria-hidden="true">FAVEHOTEL</div>
-        <div class="logo-item" aria-hidden="true">PT. INOVINDO DIGITAL MEDIA</div>
-        <div class="logo-item" aria-hidden="true">BANK BRI</div>
-        <div class="logo-item" aria-hidden="true">PT. GOTHRU MEDIA INDONESIA</div>
-        <div class="logo-item" aria-hidden="true">PT. PLN</div>
+        @if(isset($dudis) && $dudis->isNotEmpty())
+          @foreach($dudis as $dudi)
+            <div class="logo-item" style="display: inline-flex; align-items: center; gap: 10px;">
+              @if($dudi->logo)
+                <img src="{{ asset('storage/' . $dudi->logo) }}" alt="{{ $dudi->nama }}" style="height: 26px; width: auto; object-fit: contain;">
+              @endif
+              <span>{{ strtoupper($dudi->nama) }}</span>
+            </div>
+          @endforeach
+          <!-- Duplikasi otomatis agar putaran tidak putus -->
+          @foreach($dudis as $dudi)
+            <div class="logo-item" aria-hidden="true" style="display: inline-flex; align-items: center; gap: 10px;">
+              @if($dudi->logo)
+                <img src="{{ asset('storage/' . $dudi->logo) }}" alt="" style="height: 26px; width: auto; object-fit: contain;">
+              @endif
+              <span>{{ strtoupper($dudi->nama) }}</span>
+            </div>
+          @endforeach
+        @else
+          <div class="logo-item">BANK BJB</div>
+          <div class="logo-item">FAVEHOTEL</div>
+          <div class="logo-item">PT. INOVINDO DIGITAL MEDIA</div>
+          <div class="logo-item">BANK BRI</div>
+          <div class="logo-item">PT. GOTHRU MEDIA INDONESIA</div>
+          <div class="logo-item">PT. PLN</div>
+          <!-- Duplikasi logo agar putaran tidak putus -->
+          <div class="logo-item" aria-hidden="true">BANK BJB</div>
+          <div class="logo-item" aria-hidden="true">FAVEHOTEL</div>
+          <div class="logo-item" aria-hidden="true">PT. INOVINDO DIGITAL MEDIA</div>
+          <div class="logo-item" aria-hidden="true">BANK BRI</div>
+          <div class="logo-item" aria-hidden="true">PT. GOTHRU MEDIA INDONESIA</div>
+          <div class="logo-item" aria-hidden="true">PT. PLN</div>
+        @endif
       </div>
     </div>
   </div>
@@ -115,17 +134,17 @@
       </div>
 
       @if(isset($pimpinans) && $pimpinans->isNotEmpty())
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 320px)); gap: 24px;">
           @foreach($pimpinans as $pimpinan)
-            <div class="reveal" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 24px 20px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+            <div class="reveal" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px 20px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
               <img 
                 src="{{ $pimpinan->foto ? asset('storage/' . $pimpinan->foto) : asset('assets/logo.jpg.png') }}" 
                 alt="{{ $pimpinan->nama }}" 
-                style="width: 115px; height: 115px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 3px solid {{ $pimpinan->urutan == 1 ? '#c8102e' : '#e5e7eb' }};">
-              <div style="display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #c8102e; background: #fee2e2; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px;">
+                style="width: 185px; height: 225px; border-radius: 14px; object-fit: cover; object-position: top; margin: 0 auto 18px; border: 3px solid {{ $pimpinan->urutan == 1 ? '#c8102e' : '#e5e7eb' }}; background: #f8fafc;">
+              <div style="display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #c8102e; background: #fee2e2; padding: 4px 12px; border-radius: 6px; margin-bottom: 10px;">
                 {{ $pimpinan->jabatan }}
               </div>
-              <h4 style="font-size: 1.05rem; font-weight: 700; color: #18181b; margin-bottom: 4px;">
+              <h4 style="font-size: 1.08rem; font-weight: 700; color: #18181b; margin-bottom: 4px;">
                 {{ $pimpinan->nama }}
               </h4>
               @if($pimpinan->nip)
@@ -150,13 +169,13 @@
       </div>
 
       @if(isset($gurus) && $gurus->isNotEmpty())
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 280px)); gap: 22px;">
           @foreach($gurus as $guru)
-            <div class="reveal" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 22px 18px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+            <div class="reveal" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 22px 18px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
               <img 
                 src="{{ $guru->foto ? asset('storage/' . $guru->foto) : asset('assets/logo.jpg.png') }}" 
                 alt="{{ $guru->nama }}" 
-                style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin: 0 auto 14px; border: 2px solid #e5e7eb;">
+                style="width: 155px; height: 190px; border-radius: 12px; object-fit: cover; object-position: top; margin: 0 auto 16px; border: 2px solid #e5e7eb; background: #f8fafc;">
               <div style="display: inline-block; font-size: 0.72rem; font-weight: 600; color: #1d4ed8; background: #eff6ff; padding: 3px 10px; border-radius: 6px; margin-bottom: 8px;">
                 {{ $guru->mapel }}
               </div>
@@ -176,7 +195,7 @@
       @endif
     </div>
 
-    <!-- ================= 3. VISI & MISI SEKOLAH ================= -->
+    <!-- ================= 3. VISI & MISI SEKOLAH (DINAMIS DARI ADMIN) ================= -->
     <div class="section-head reveal" style="max-width: 100%;">
       <span class="eyebrow-dark">Arah &amp; Tujuan</span>
       <h2>Visi &amp; Misi Sekolah</h2>
@@ -187,17 +206,26 @@
       <div class="profil-card reveal">
         <div class="icon-tag">V</div>
         <h3>Visi</h3>
-        <p>Menjadi lembaga pendidikan kejuruan unggul yang menghasilkan lulusan kompeten, berkarakter, mandiri, dan berdaya saing tinggi di tingkat nasional maupun global.</p>
+        <p>{{ $visi->isi ?? 'Menjadi lembaga pendidikan kejuruan unggul yang menghasilkan lulusan kompeten, berkarakter, mandiri, dan berdaya saing tinggi di tingkat nasional maupun global.' }}</p>
       </div>
 
       <div class="profil-card alt reveal">
         <div class="icon-tag">M</div>
         <h3>Misi</h3>
         <ul class="misi-list">
-          <li><span class="idx">01</span><span>Menyelenggarakan pembelajaran berbasis kompetensi dan dunia industri.</span></li>
-          <li><span class="idx">02</span><span>Membentuk karakter disiplin, jujur, dan etos kerja tinggi.</span></li>
-          <li><span class="idx">03</span><span>Menjalin kemitraan aktif dengan dunia usaha dan industri (DUDI).</span></li>
-          <li><span class="idx">04</span><span>Mendorong inovasi, kreativitas, dan jiwa kewirausahaan siswa.</span></li>
+          @if(isset($misis) && $misis->isNotEmpty())
+            @foreach($misis as $misi)
+              <li>
+                <span class="idx">{{ str_pad($misi->urutan, 2, '0', STR_PAD_LEFT) }}</span>
+                <span>{{ $misi->isi }}</span>
+              </li>
+            @endforeach
+          @else
+            <li><span class="idx">01</span><span>Menyelenggarakan pembelajaran berbasis kompetensi dan dunia industri.</span></li>
+            <li><span class="idx">02</span><span>Membentuk karakter disiplin, jujur, dan etos kerja tinggi.</span></li>
+            <li><span class="idx">03</span><span>Menjalin kemitraan aktif dengan dunia usaha dan industri (DUDI).</span></li>
+            <li><span class="idx">04</span><span>Mendorong inovasi, kreativitas, dan jiwa kewirausahaan siswa.</span></li>
+          @endif
         </ul>
       </div>
     </div>
@@ -238,51 +266,22 @@
     <div class="section-head reveal" style="max-width: 100%;">
       <span class="eyebrow-dark">Kompetensi Keahlian</span>
       <h2>Jurusan Pilihan</h2>
-      <p style="max-width: 650px;">Enam program keahlian yang dirancang mengikuti kebutuhan industri terkini.</p>
+      <p style="max-width: 650px;">{{ isset($jurusans) && $jurusans->isNotEmpty() ? $jurusans->count() : 'Enam' }} program keahlian yang dirancang mengikuti kebutuhan industri terkini.</p>
     </div>
 
     <div class="jurusan-grid">
-      <div class="jur-card reveal">
-        <div class="jur-code">PPLG · 01</div>
-        <div class="jur-icon"><i data-lucide="monitor"></i></div>
-        <h3>Pengembangan Perangkat Lunak &amp; Gim</h3>
-        <p>Mempelajari pemrograman web, pembuatan aplikasi mobile, pengembangan gim, serta rekayasa perangkat lunak modern.</p>
-      </div>
-
-      <div class="jur-card reveal">
-        <div class="jur-code">AKL · 02</div>
-        <div class="jur-icon"><i data-lucide="dollar-sign"></i></div>
-        <h3>Akuntansi &amp; Keuangan Lembaga</h3>
-        <p>Pengelolaan laporan keuangan, perpajakan, dan sistem akuntansi digital instansi.</p>
-      </div>
-
-      <div class="jur-card reveal">
-        <div class="jur-code">TBSM · 03</div>
-        <div class="jur-icon"><i data-lucide="settings"></i></div>
-        <h3>Teknik Bisnis Sepeda Motor</h3>
-        <p>Perawatan, perbaikan, dan diagnosa mesin sepeda motor konvensional &amp; injeksi.</p>
-      </div>
-
-      <div class="jur-card reveal">
-        <div class="jur-code">MPLB · 04</div>
-        <div class="jur-icon"><i data-lucide="briefcase"></i></div>
-        <h3>Manajemen Perkantoran &amp; Layanan Bisnis</h3>
-        <p>Manajemen administrasi, kearsipan digital, dan korespondensi bisnis modern.</p>
-      </div>
-
-      <div class="jur-card reveal">
-        <div class="jur-code">ATPH · 05</div>
-        <div class="jur-icon"><i data-lucide="leaf"></i></div>
-        <h3>Agribisnis Tanaman Pangan &amp; Hortikultura</h3>
-        <p>Mempelajari dasar budidaya tanaman, pengelolaan lahan tani, serta teknik pembibitan pertanian modern.</p>
-      </div>
-
-      <div class="jur-card reveal">
-        <div class="jur-code">TEI · 06</div>
-        <div class="jur-icon"><i data-lucide="zap"></i></div>
-        <h3>Teknik Elektronika Industri</h3>
-        <p>Pengenalan dasar komponen elektronika, perakitan sirkuit kontrol, serta pemeliharaan sistem digital industri.</p>
-      </div>
+      @if(isset($jurusans) && $jurusans->isNotEmpty())
+        @foreach($jurusans as $index => $jurusan)
+          <div class="jur-card reveal">
+            <div class="jur-code">{{ strtoupper($jurusan->kode) }} · {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
+            <div class="jur-icon"><i data-lucide="{{ $jurusan->ikon ?: 'graduation-cap' }}"></i></div>
+            <h3>{{ $jurusan->nama }}</h3>
+            <p>{{ $jurusan->deskripsi }}</p>
+          </div>
+        @endforeach
+      @else
+        <p style="color: #6b7280; font-size: 0.92rem;">Data kompetensi keahlian belum ditambahkan.</p>
+      @endif
     </div>
   </div>
 </section>
@@ -351,7 +350,7 @@
             <div style="padding: 22px; flex: 1; display: flex; flex-direction: column;">
               <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748b; margin-bottom: 10px;">
                 <span style="color: #c8102e; font-weight: 600;">{{ $berita->kategori }}</span>
-                <span>{{ $berita->created_at->format('d M Y') }}</span>
+                <span>{{ ($berita->jadwal_tayang ?? $berita->created_at)->format('d M Y') }}</span>
               </div>
               <h3 style="font-size: 1.15rem; line-height: 1.4; margin-bottom: 10px;">
                 <a href="{{ route('berita.show', $berita->slug) }}" style="text-decoration: none; color: inherit;">
@@ -383,27 +382,34 @@
       <p>Informasi cepat seputar pendaftaran dan kegiatan belajar di SMKN 1 Binong.</p>
     </div>
 
+    @php
+      $daftarFaq = (isset($faqs) && $faqs->isNotEmpty())
+        ? $faqs
+        : collect([
+            (object) [
+              'pertanyaan' => 'Kapan pendaftaran siswa baru (PPDB) dibuka?',
+              'jawaban' => 'Pendaftaran biasanya dibuka dalam 2–3 gelombang mulai bulan Mei hingga Juli setiap tahunnya. Informasi resmi tanggal pelaksanaan akan diupdate berkala di halaman utama website.',
+            ],
+            (object) [
+              'pertanyaan' => 'Apakah siswa PPLG mendapatkan fasilitas laptop dari sekolah?',
+              'jawaban' => 'Sekolah menyediakan fasilitas Lab Komputer modern dengan spesifikasi tinggi yang dapat digunakan selama jam pelajaran. Namun, siswa sangat disarankan memiliki perangkat mandiri untuk belajar di rumah.',
+            ],
+            (object) [
+              'pertanyaan' => 'Bagaimana dengan penyaluran kerja bagi lulusan?',
+              'jawaban' => 'Melalui BKK (Bursa Kerja Khusus) SMKN 1 Binong, kami bekerja sama dengan puluhan perusahaan nasional untuk menyelenggarakan rekrutmen langsung sebelum siswa dinyatakan lulus.',
+            ],
+          ]);
+    @endphp
+
     <div class="faq-container reveal">
-      <div class="faq-item">
-        <button type="button" class="faq-question">Kapan pendaftaran siswa baru (PPDB) dibuka? <span class="faq-arrow">+</span></button>
-        <div class="faq-answer">
-          <p>Pendaftaran biasanya dibuka dalam 2–3 gelombang mulai bulan Mei hingga Juli setiap tahunnya. Informasi resmi tanggal pelaksanaan akan diupdate berkala di halaman utama website.</p>
+      @foreach($daftarFaq as $item)
+        <div class="faq-item">
+          <button type="button" class="faq-question">{{ $item->pertanyaan }} <span class="faq-arrow">+</span></button>
+          <div class="faq-answer">
+            <p>{{ $item->jawaban }}</p>
+          </div>
         </div>
-      </div>
-
-      <div class="faq-item">
-        <button type="button" class="faq-question">Apakah siswa PPLG mendapatkan fasilitas laptop dari sekolah? <span class="faq-arrow">+</span></button>
-        <div class="faq-answer">
-          <p>Sekolah menyediakan fasilitas Lab Komputer modern dengan spesifikasi tinggi yang dapat digunakan selama jam pelajaran. Namun, siswa sangat disarankan memiliki perangkat mandiri untuk belajar di rumah.</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button type="button" class="faq-question">Bagaimana dengan penyaluran kerja bagi lulusan? <span class="faq-arrow">+</span></button>
-        <div class="faq-answer">
-          <p>Melalui BKK (Bursa Kerja Khusus) SMKN 1 Binong, kami bekerja sama dengan puluhan perusahaan nasional untuk menyelenggarakan rekrutmen langsung sebelum siswa dinyatakan lulus.</p>
-        </div>
-      </div>
+      @endforeach
     </div>
   </div>
 </section>
@@ -475,6 +481,39 @@
   </div>
 </footer>
 
+<script>
+  <?php
+    $starbinJurusanPayload = isset($jurusans)
+      ? $jurusans->map(function ($j) {
+          return [
+            'id' => (string) $j->id,
+            'kode' => strtoupper($j->kode),
+            'nama' => $j->nama,
+            'deskripsi' => $j->deskripsi,
+            'prospek' => $j->prospek,
+          ];
+        })->values()->all()
+      : [];
+
+    $starbinKuisPayload = isset($kuisSoals)
+      ? $kuisSoals->map(function ($s) {
+          return [
+            'id' => $s->id,
+            'pertanyaan' => $s->pertanyaan,
+            'options' => $s->opsis->map(function ($o) {
+              return [
+                'text' => $o->teks_opsi,
+                'jurusan_id' => (string) $o->jurusan_id,
+                'bobot' => (int) ($o->bobot ?: 1),
+              ];
+            })->values()->all(),
+          ];
+        })->values()->all()
+      : [];
+  ?>
+  window.STARBIN_JURUSANS = <?= json_encode($starbinJurusanPayload, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG); ?>;
+  window.STARBIN_KUIS_SOALS = <?= json_encode($starbinKuisPayload, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG); ?>;
+</script>
 <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>

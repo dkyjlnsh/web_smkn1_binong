@@ -10,7 +10,10 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect('/admin/berita');
+            if (Auth::user()->isPenulis()) {
+                return redirect()->route('admin.berita');
+            }
+            return redirect()->route('admin.dashboard');
         }
         return view('auth.login');
     }
@@ -24,7 +27,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/admin/berita');
+
+            if (Auth::user()->isPenulis()) {
+                return redirect()->route('admin.berita');
+            }
+            return redirect()->route('admin.dashboard');
         }
 
         return back()->withErrors([
@@ -37,6 +44,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }
